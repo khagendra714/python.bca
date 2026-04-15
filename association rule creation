@@ -1,0 +1,68 @@
+import pandas as pd
+from itertools import combinations
+
+# Sample transactions
+transactions = [
+    ['Milk', 'Bread', 'Butter'],
+    ['Beer', 'Bread'],
+    ['Milk', 'Bread', 'Butter', 'Beer'],
+    ['Bread', 'Butter'],
+    ['Milk', 'Butter']
+]
+
+# Get unique items
+items = sorted(set(item for t in transactions for item in t))
+
+# Create encoded data
+encoded_data = []
+for t in transactions:
+    row = []
+    for item in items:
+        row.append(1 if item in t else 0)
+    encoded_data.append(row)
+
+# Create DataFrame
+df = pd.DataFrame(encoded_data, columns=items)
+print("\nEncoded Data:\n", df)
+
+# -----------------------------------
+# Step 1: Generate Frequent Itemsets
+# -----------------------------------
+min_support = 0.4
+freq_items = {}
+
+for i in range(1, len(items) + 1):
+    for comb in combinations(items, i):
+        comb_set = frozenset(comb)
+        count = 0
+        
+        for t in transactions:
+            if comb_set.issubset(t):
+                count += 1
+        
+        support = count / len(transactions)
+        
+        if support >= min_support:
+            freq_items[comb_set] = support
+
+print("\nFrequent Itemsets:")
+for k, v in freq_items.items():
+    print(set(k), ":", round(v, 2))
+
+# -----------------------------------
+# Step 2: Generate Association Rules
+# -----------------------------------
+min_conf = 0.6
+print("\nAssociation Rules:\n")
+
+for itemset in freq_items:
+    if len(itemset) > 1:
+        for i in range(1, len(itemset)):
+            for antecedent in combinations(itemset, i):
+                antecedent = frozenset(antecedent)
+                consequent = itemset - antecedent
+                
+                conf = freq_items[itemset] / freq_items[antecedent]
+                
+                if conf >= min_conf:
+                    print(f"{set(antecedent)} -> {set(consequent)} (Confidence: {conf:.2f})")
