@@ -1,0 +1,29 @@
+#program for Decision Tree
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
+
+data = {
+'Age': [22, 25, 47, 52, 46, 56],
+'Income': [15000, 29000, 48000, 60000, 52000, 75000],
+'Student': [0, 1, 0, 0, 1, 1],
+'Buys': [0, 1, 1, 0, 1, 1]
+}
+
+df = pd.DataFrame(data)
+X = df[['Age', 'Income', 'Student']]
+y = df['Buys']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
+from sklearn.tree import plot_tree
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(8,6))
+plot_tree(model, feature_names=X.columns, class_names=['No', 'Yes'], filled=True)
+plt.show()
