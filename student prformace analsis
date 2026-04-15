@@ -1,0 +1,47 @@
+# Program for Student Performance Analysis
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# Dataset
+file = pd.DataFrame({
+    "math":[50,55,67,30,28,35,67,31,89,80],
+    "science":[57,78,93,29,34,79,67,93,45,54],
+    "english":[98,67,89,63,76,36,38,55,88,99],
+    "result":["pass","pass","pass","fail","fail","pass","pass","fail","pass","pass"]
+})
+
+df = pd.DataFrame(file)
+print("\nDataset:\n", df)
+
+# Features and target
+x = df[["math","science","english"]]
+y = df["result"]
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=42)
+
+# Decision Tree
+dt = DecisionTreeClassifier()
+dt.fit(x_train, y_train)
+y_pred_dt = dt.predict(x_test)
+
+# Logistic Regression
+lr = LogisticRegression()
+lr.fit(x_train, y_train)
+y_pred_lr = lr.predict(x_test)
+
+# Accuracy
+print("\nDecision Tree Accuracy:", accuracy_score(y_test, y_pred_dt))
+print("Logistic Regression Accuracy:", accuracy_score(y_test, y_pred_lr))
+
+# Confusion Matrix
+print("\nDecision Tree Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred_dt))
+
+print("\nLogistic Regression Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred_lr))
